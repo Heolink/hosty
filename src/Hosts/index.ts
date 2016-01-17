@@ -27,7 +27,7 @@ class Hosts {
 
     public write (data: String)
     {
-        return this.os.write(data);
+        return this.os.write(data.trim());
     }
 
     public watch(callback)

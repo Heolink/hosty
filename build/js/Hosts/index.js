@@ -18,7 +18,7 @@ var Hosts = (function () {
         return this.os.read();
     };
     Hosts.prototype.write = function (data) {
-        return this.os.write(data);
+        return this.os.write(data.trim());
     };
     Hosts.prototype.watch = function (callback) {
         return this.os.watch(callback);

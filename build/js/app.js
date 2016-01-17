@@ -26,7 +26,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 files: 'loading',
                 cfile: {
                     'rev': 'Master'
-                }
+                },
+                master: null
             };
         },
         asyncData: function (resolve, reject) {
@@ -38,7 +39,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
                 });
                 resolve({
-                    'hosts_datas': d
+                    'hosts_datas': d,
+                    master: d
                 });
             }, function error(d) {
                 reject(d);
@@ -52,6 +54,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 var doc = this.files[index];
                 this.$children[0].model = doc.data;
                 this.cfile = doc;
+                this.diffTab = false;
             },
             reload: function () {
                 var _this = this;
@@ -60,7 +63,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     _this.cfile = {
                         rev: 'Master'
                     };
+                    _this.master = d;
                 });
+                this.diffTab = false;
             },
             remove: function (index) {
                 var that = this;
