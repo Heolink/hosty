@@ -1,6 +1,6 @@
 import os = require('os');
-var Mac = require('./mac');
-var Linux = require('./linux');
+import Mac = require('./mac');
+import Linux = require('./linux');
 
 class Hosts {
 
@@ -11,10 +11,10 @@ class Hosts {
         this.platform = os.platform();
         switch (this.platform) {
             case 'darwin':
-                this.os = new Mac();
+                this.os = new Mac.Mac();
                 break;
             case 'linux':
-                this.os = new Linux();
+                this.os = new Linux.Linux();
                 break;
                 break;
         }
@@ -28,6 +28,11 @@ class Hosts {
     public write (data: String)
     {
         return this.os.write(data);
+    }
+
+    public watch(callback)
+    {
+        return this.os.watch(callback);
     }
 
 }

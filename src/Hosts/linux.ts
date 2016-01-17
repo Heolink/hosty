@@ -1,12 +1,5 @@
-var Mac = require('./mac');
-var InterfaceHosts = require('./interfaceHosts');
+import Mac = require('./mac')
 
-
-
-class Linux extends Mac implements InterfaceHosts {
-
-
+export class Linux extends Mac.Mac {
 
 }
-
-module.exports = Mac;

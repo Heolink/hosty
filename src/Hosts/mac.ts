@@ -1,13 +1,17 @@
+var chokidar = require('chokidar');
 var sudo = require('electron-sudo');
 var Promise = require('promise');
+
 var InterfaceHosts = require('./interfaceHosts');
 
+export class Mac implements InterfaceHosts {
 
+    static file =  '/etc/hosts'
 
-class Mac implements InterfaceHosts {
+    public clientSave = false;
 
     public read() {
-        var command = 'cat /etc/hosts';
+        var command = 'cat ' + Mac.file;
 
         var options = {
             name: 'Hosts manager',
@@ -30,16 +34,29 @@ class Mac implements InterfaceHosts {
             name: 'Hosts manager',
         }
 
+        var that = this;
+
         return new Promise(function(resolve, reject){
             sudo.exec(command, options, function(error, success){
                 if( error ) {
                     reject(error);
                 }
+                that.clientSave = true;
                 resolve(success);
             });
         });
     }
 
-}
+    public watch(callback: Function)
+    {
+        var that = this
+        chokidar.watch(Mac.file, {ignored: /[\/\\]\./}).on('change', (event, path) => {
+            if( that.clientSave ) {
+                that.clientSave = false;
+            } else {
+                callback()
+            }
+        });
+    }
 
-module.exports = Mac;
+}

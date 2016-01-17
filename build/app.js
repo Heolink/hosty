@@ -1,6 +1,6 @@
 var app = require('app');  // Module to control application life.
 var BrowserWindow = require('browser-window');  // Module to create native browser window.
-var handlebars = require('handlebars');
+
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -27,6 +27,7 @@ app.on('ready', function() {
         'accept-first-mouse': true,
         'title-bar-style': 'hidden'
     });
+
 
     // and load the index.html of the app.
     mainWindow.loadURL('file://' + __dirname + '/index.html');

@@ -1,7 +1,7 @@
-declare var sudo: any;
-declare var Promise: any;
-declare var InterfaceHosts: any;
-declare class Mac implements InterfaceHosts {
+export declare class Mac implements InterfaceHosts {
+    static file: string;
+    clientSave: boolean;
     read(): any;
     write(data: String): any;
+    watch(callback: Function): void;
 }

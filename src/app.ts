@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', function () {
     var hosts = new Hosts();
     var prevKeyPress = null;
 
-
     var myVue = new Vue({
         el: '#app',
         data: function() {
@@ -23,8 +22,15 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         },
         asyncData: function (resolve, reject) {
+            var that = this
+            console.log(that)
             hosts.read().then(
-                function success(d){
+                (d) => {
+                    hosts.watch(() =>{
+                        notie.confirm('File changed!', 'Reload !', 'Nop', function(){
+                            that.reload();
+                        });
+                    });
                     resolve({
                         'hosts_datas': d
                     })
@@ -34,6 +40,11 @@ document.addEventListener('DOMContentLoaded', function () {
             })
         },
         methods: {
+            reload: function() {
+                hosts.read().then((d)=>{
+                    this.$children[0].model = d;
+                })
+            },
             save: function(event) {
                 hosts.write(this['hosts_datas']).then(
                     function(d){
@@ -63,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     initCodeMirror: function () {
                         var vm = this;
 
-                        var cm = CodeMirror(vm.$el, {
+                        var cm: any = CodeMirror(vm.$el, {
                             mode: 'ruby',
                             lineNumbers: true,
                             lineWrapping:true,

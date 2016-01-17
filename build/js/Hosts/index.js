@@ -6,10 +6,10 @@ var Hosts = (function () {
         this.platform = os.platform();
         switch (this.platform) {
             case 'darwin':
-                this.os = new Mac();
+                this.os = new Mac.Mac();
                 break;
             case 'linux':
-                this.os = new Linux();
+                this.os = new Linux.Linux();
                 break;
                 break;
         }
@@ -19,6 +19,9 @@ var Hosts = (function () {
     };
     Hosts.prototype.write = function (data) {
         return this.os.write(data);
+    };
+    Hosts.prototype.watch = function (callback) {
+        return this.os.watch(callback);
     };
     return Hosts;
 })();

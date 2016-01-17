@@ -17,7 +17,14 @@ document.addEventListener('DOMContentLoaded', function () {
             };
         },
         asyncData: function (resolve, reject) {
-            hosts.read().then(function success(d) {
+            var that = this;
+            console.log(that);
+            hosts.read().then(function (d) {
+                hosts.watch(function () {
+                    notie.confirm('File changed!', 'Reload !', 'Nop', function () {
+                        that.reload();
+                    });
+                });
                 resolve({
                     'hosts_datas': d
                 });
@@ -26,6 +33,12 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         },
         methods: {
+            reload: function () {
+                var _this = this;
+                hosts.read().then(function (d) {
+                    _this.$children[0].model = d;
+                });
+            },
             save: function (event) {
                 hosts.write(this['hosts_datas']).then(function (d) {
                     this['hosts_datas'] = d;
