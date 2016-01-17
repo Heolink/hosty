@@ -2345,3 +2345,11 @@ td:last-child {
 .CodeMirror {
     height: 100% !important;
 }
+
+.nav-group-item {
+    cursor: pointer;
+}
+
+.nav-group-item .icon-trash {
+    cursor: pointer;
+}

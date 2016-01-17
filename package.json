@@ -16,9 +16,11 @@
   "dependencies": {
     "chokidar": "^1.4.2",
     "electron-sudo": "^3.0.2",
+    "moment": "^2.11.1",
     "nedb": "^1.6.1",
     "notie": "^2.1.0",
     "promise": "^7.1.1",
+    "uniqid": "^1.0.0",
     "vue": "^1.0.14",
     "vue-async-data": "^1.0.2"
   }
