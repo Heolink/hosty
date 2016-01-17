@@ -1,0 +1,23 @@
+{
+  "name": "hosty",
+  "version": "1.0.0",
+  "description": "A simple hosts file manager",
+  "author": "Heolink",
+  "main": "build/app.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron-prebuilt": "^0.36.4",
+    "gulp": "^3.9.0",
+    "gulp-tsc": "^1.1.4",
+    "gulp-watch": "^4.3.5"
+  },
+  "dependencies": {
+    "electron-sudo": "^3.0.2",
+    "notie": "^2.1.0",
+    "promise": "^7.1.1",
+    "vue": "^1.0.14",
+    "vue-async-data": "^1.0.2"
+  }
+}

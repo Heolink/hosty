@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Photon</title>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../css/photon.css">
+
+
+</head>
+<body>
+<div class="window" id="app">
+
+    <!-- .toolbar-header sits at the top of your app -->
+    <header class="toolbar toolbar-header">
+        <h1 class="title">Hosts Manager ({{ message }})</h1>
+        <div class="toolbar-actions">
+            <div class="btn-group">
+                <button class="btn btn-default active home-btn">
+                    <span class="icon icon-home"></span>
+                </button>
+                <button class="btn btn-default " v-on:click="save">
+                    <span class="icon icon-record"></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Your app's content goes inside .window-content -->
+    <div class="window-content">
+        <div class="pane-group">
+            <div class="pane pane-sm sidebar">
+                <nav class="nav-group">
+                    <h5 class="nav-group-title">Files</h5>
+              <span class="nav-group-item">
+                <span class="icon icon-home"></span>
+                Hosts
+              </span>
+
+                </nav>
+            </div>
+
+            <div class="pane">
+                <form action="">
+                    <textarea id="t-file" v-on:keyup="saveMe" v-model="hosts_datas" class="form-control" rows="30"></textarea>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Javascript -->
+<script src="js/app.js" charset="utf-8"></script>
+</body>
+</html>
