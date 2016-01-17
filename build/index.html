@@ -5,6 +5,8 @@
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="../css/photon.css">
+    <link rel="stylesheet" href="vendor/codemirror/lib/codemirror.css">
+    <link rel="stylesheet" href="vendor/codemirror/theme/monokai.css">
 
 
 </head>
@@ -20,7 +22,7 @@
                     <span class="icon icon-home"></span>
                 </button>
                 <button class="btn btn-default " v-on:click="save">
-                    <span class="icon icon-record"></span>
+                    <span class="icon icon-floppy"></span>
                 </button>
             </div>
         </div>
@@ -42,13 +44,15 @@
 
             <div class="pane">
                 <form action="">
-                    <textarea id="t-file" v-on:keyup="saveMe" v-model="hosts_datas" class="form-control" rows="30"></textarea>
+                    <codemirror id="t-file" v-on:keyup="saveMe" :model.sync="hosts_datas"></codemirror>
                 </form>
             </div>
         </div>
     </div>
 </div>
 <!-- Javascript -->
+<script src="vendor/codemirror/lib/codemirror.js"></script>
+<script src="vendor/codemirror/mode/ruby/ruby.js"></script>
 <script src="js/app.js" charset="utf-8"></script>
 </body>
 </html>

@@ -2341,3 +2341,7 @@ td:last-child {
 .hide {
     display: none;
 }
+
+.CodeMirror {
+    height: 100% !important;
+}

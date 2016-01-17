@@ -13,7 +13,8 @@ document.addEventListener('DOMContentLoaded', function () {
     var hosts = new Hosts();
     var prevKeyPress = null;
 
-    new Vue({
+
+    var myVue = new Vue({
         el: '#app',
         data: function() {
             return {
@@ -50,8 +51,45 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 prevKeyPress = current;
             }
+        },
+        components: {
+            codemirror: {
+                replace: false,
+                props: ['model'],
+                ready: function () {
+                    this.$nextTick(this.initCodeMirror);
+                },
+                methods: {
+                    initCodeMirror: function () {
+                        var vm = this;
+
+                        var cm = CodeMirror(vm.$el, {
+                            mode: 'ruby',
+                            lineNumbers: true,
+                            lineWrapping:true,
+                            theme: 'monokai'
+                        });
+
+                        cm.on('change', function () {
+                            vm.$set('model', cm.getValue());
+                            // Add { silent: true }  as 3rd arg?
+                        });
+
+                        // Set the initial value
+                        cm.setValue(vm.model);
+
+                        this.$watch('model', function (value) {
+                            if (value !== cm.getValue()) {
+                                cm.setValue(value);
+                            }
+                        });
+                    }
+                }
+            }
         }
     })
+
+
 
 })
 
