@@ -16,7 +16,6 @@ class Hosts {
             case 'linux':
                 this.os = new Linux.Linux();
                 break;
-                break;
         }
     }
 

@@ -11,7 +11,6 @@ var Hosts = (function () {
             case 'linux':
                 this.os = new Linux.Linux();
                 break;
-                break;
         }
     }
     Hosts.prototype.read = function () {

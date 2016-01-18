@@ -35,13 +35,13 @@ export class Mac implements InterfaceHosts {
         }
 
         var that = this;
-
+        that.clientSave = true;
         return new Promise(function(resolve, reject){
             sudo.exec(command, options, function(error, success){
                 if( error ) {
                     reject(error);
                 }
-                that.clientSave = true;
+                
                 resolve(success);
             });
         });
