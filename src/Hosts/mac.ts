@@ -1,9 +1,6 @@
 var chokidar = require('chokidar');
 var sudo = require('electron-sudo');
-var fs = require('fs');
 var Promise = require('promise');
-var remote = require('electron').remote
-const pathConfig = remote.app.getPath('appData') + '/hosty';
 
 var InterfaceHosts = require('./interfaceHosts');
 
@@ -14,7 +11,7 @@ export class Mac implements InterfaceHosts {
     public clientSave = false;
 
     public read() {
-        var command = 'node ./fs.js read "' + Mac.file + '"';
+        var command = 'cat ' + Mac.file;
 
         var options = {
             name: 'Hosts manager',
@@ -31,31 +28,23 @@ export class Mac implements InterfaceHosts {
     }
 
     public write(data: String) {
+        var command = 'echo "'+data+'" | sudo tee ' + Mac.file;
+
+        var options = {
+            name: 'Hosts manager',
+        }
+
+        var that = this;
+        that.clientSave = true;
         return new Promise(function(resolve, reject){
-            fs.writeFile(pathConfig + '/tmp.txt', data, function(err) {
-                if(err) {
-                    return console.log(err);
-                }
-                var command = 'node ./fs.js write "' + Mac.file + '"  "' + pathConfig + '/tmp.txt"';
-                var options = {
-                    name: 'Hosts manager',
+            sudo.exec(command, options, function(error, success){
+                if( error ) {
+                    reject(error);
                 }
 
-                var that = this;
-                that.clientSave = true;
-
-                    sudo.exec(command, options, function(error, success){
-                        if( error ) {
-                            reject(error);
-                        }
-
-                        resolve(success);
-                    });
-
+                resolve(success);
             });
         });
-
-
     }
 
     public watch(callback: Function)
