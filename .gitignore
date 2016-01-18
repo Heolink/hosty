@@ -41,3 +41,4 @@ example-components
 .gulp-tsc*
 save.txt
 bin/*
+dist
