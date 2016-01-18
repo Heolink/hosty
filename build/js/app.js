@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             saveMe: function (event) {
                 var current = event.keyCode;
-                if (current == 83 && prevKeyPress == 91) {
+                if (current == 83 && (prevKeyPress == 91 || prevKeyPress == 17)) {
                     this.save(event);
                 }
                 prevKeyPress = current;
