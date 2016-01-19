@@ -14,29 +14,6 @@ var Linux = (function (_super) {
     function Linux() {
         _super.apply(this, arguments);
     }
-    Linux.prototype.write = function (data) {
-        var command = 'mv ' + pathConfig + '/hosts ' + Linux.file;
-        var options = {
-            name: 'Hosts manager'
-        };
-        var that = this;
-        that.clientSave = true;
-        return new Promise(function (resolve, reject) {
-            fs.writeFile(pathConfig + '/hosts', data, function (err) {
-                if (err) {
-                    reject(err);
-                }
-                else {
-                    sudo.exec(command, options, function (error, success) {
-                        if (error) {
-                            reject(error);
-                        }
-                        resolve(success);
-                    });
-                }
-            });
-        });
-    };
     return Linux;
 })(Mac.Mac);
 exports.Linux = Linux;

@@ -25,6 +25,7 @@
     "promise": "^7.1.1",
     "uniqid": "^1.0.0",
     "vue": "^1.0.14",
-    "vue-async-data": "^1.0.2"
+    "vue-async-data": "^1.0.2",
+    "vue-router": "^0.7.9"
   }
 }

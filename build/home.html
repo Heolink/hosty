@@ -1,0 +1,32 @@
+<div class="pane-group">
+    <div class="pane pane-sm sidebar">
+        <nav class="nav-group">
+            <h5 class="nav-group-title">Files</h5>
+                  <span class="nav-group-item" v-on:click="reload" v-bind:class="{ 'active': cfile.rev == 'Master' }">
+                    <span class="icon icon-home" ></span>
+                    Hosts
+                  </span>
+
+        </nav>
+        <nav class="nav-group" v-if="settings.history">
+            <h5 class="nav-group-title">History <small>({{ history.length }}/{{ settings.historyNb }})</small></h5>
+                  <span class="nav-group-item" v-bind:class="{ 'active': file.rev == cfile.rev }" v-on:click="load(index)" v-for="(index, file) in history">
+                         {{ file.rev }} - <small>{{ file.created_at | moment 'YYYY/MM/DD HH:mm' }}</small>
+                      <span class="icon icon-trash" v-on:click="remove(index)" ></span>
+                  </span>
+
+        </nav>
+    </div>
+
+    <div class="pane">
+        <div class="tab-group">
+            <div class="tab-item ">
+                <span class="icon icon-cancel icon-close-tab"></span>
+                Host ({{ cfile.rev }})
+            </div>
+        </div>
+
+        <codemirror id="t-file" v-on:keyup="saveMe" :model.sync="hosts_datas"></codemirror>
+
+    </div>
+</div>

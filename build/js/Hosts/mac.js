@@ -1,38 +1,44 @@
 var chokidar = require('chokidar');
 var sudo = require('electron-sudo');
 var Promise = require('promise');
+var fs = require('fs');
+var remote = require('electron').remote;
+var pathConfig = remote.app.getPath('appData') + '/hosty';
 var InterfaceHosts = require('./interfaceHosts');
 var Mac = (function () {
     function Mac() {
         this.clientSave = false;
     }
     Mac.prototype.read = function () {
-        var command = 'cat ' + Mac.file;
-        var options = {
-            name: 'Hosts manager'
-        };
         return new Promise(function (resolve, reject) {
-            sudo.exec(command, options, function (error, success) {
-                if (error) {
-                    reject(error);
+            fs.readFile(Mac.file, { encoding: 'UTF8' }, function (err, data) {
+                if (err) {
+                    reject(err);
                 }
-                resolve(success);
+                resolve(data);
             });
         });
     };
     Mac.prototype.write = function (data) {
-        var command = 'echo "' + data + '" | sudo tee ' + Mac.file;
+        var command = 'mv "' + pathConfig + '/hosts" ' + Mac.file;
         var options = {
-            name: 'Hosts manager'
+            name: 'Hosty'
         };
         var that = this;
         that.clientSave = true;
         return new Promise(function (resolve, reject) {
-            sudo.exec(command, options, function (error, success) {
-                if (error) {
-                    reject(error);
+            fs.writeFile(pathConfig + '/hosts', data, function (err) {
+                if (err) {
+                    reject(err);
                 }
-                resolve(success);
+                else {
+                    sudo.exec(command, options, function (error, success) {
+                        if (error) {
+                            reject(error);
+                        }
+                        resolve(success);
+                    });
+                }
             });
         });
     };

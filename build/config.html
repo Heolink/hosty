@@ -1,0 +1,20 @@
+<div class="pane-group">
+    <div class="pane padded pane-one-third">
+        <form >
+            <div class="form-group">
+                <label>Historique</label>
+                <select class="form-control" v-model="settings.historyNb">
+                    <option>0</option>
+                    <option>5</option>
+                    <option>10</option>
+                    <option>15</option>
+                    <option>20</option>
+                </select>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-form btn-default" v-link="{ path: '/' }">Cancel</button>
+                <button type="submit" class="btn btn-form btn-primary" v-on:click="save">Enregistré</button>
+            </div>
+        </form>
+    </div>
+</div>
