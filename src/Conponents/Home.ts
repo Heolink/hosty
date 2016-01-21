@@ -16,18 +16,20 @@ var prevKeyPress = null;
 
 var home = {
     template: fs.readFileSync(remote.app.getAppPath()+'/build/home.html', 'UTF8'),
-        data: function() {
-    return {
-        message: 'Vuejs power',
-        hosts_datas: 'loading ....',
-        history: 'loading',
-        cfile: {
-            'rev': 'Master',
-        },
-        master: null,
-        settings: {},
-    }
-},
+    data: function() {
+        return {
+            message: 'Vuejs power',
+            hosts_datas: 'loading ....',
+            history: 'loading',
+            cfile: {
+                'rev': 'Master',
+            },
+            master: null,
+            settings: {},
+            raw: true,
+            hostObject: []
+        }
+    },
     asyncData: function (resolve, reject) {
         var that = this
         hosts.read().then(
@@ -53,10 +55,30 @@ var home = {
             resolve({settings:settings})
         })
     },
+    created: function () {
+        this.$watch('hosts_datas', (n, o) => {
+            this['hostObject'] = []
+            var lines = n.split("\n");
+            for(var lineNumber in lines) {
+                var line = lines[lineNumber];
+                var ip = hosts.getIp(line)
+                if(ip) {
+                    ip = ip[0];
+                    //on vire les éléments vide avec : filter(x=>!!x)
+                    var domains = line.replace(ip,'').split(' ').filter(x=>!!x);
+                    this['hostObject'].push({
+                        ip: ip,
+                        domains: domains
+                    });
+                }
+            }
+        })
+    },
     methods: {
         load: function(index) {
             var doc = this.history[index];
             this.$children[0].model = doc['data'];
+            this['hosts_datas'] = doc['data'];
             this.cfile = doc;
         },
         reload: function() {
@@ -171,4 +193,8 @@ var home = {
     }
 }
 
-module.exports = home;
+module.exports = function(App) {
+    var vm = App.extend(home);
+
+    return vm;
+}

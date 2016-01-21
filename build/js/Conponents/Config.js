@@ -29,4 +29,6 @@ var config = {
         }
     }
 };
-module.exports = config;
+module.exports = function (App) {
+    return App.extend(config);
+};

@@ -20,7 +20,9 @@ var home = {
                 'rev': 'Master'
             },
             master: null,
-            settings: {}
+            settings: {},
+            raw: true,
+            hostObject: []
         };
     },
     asyncData: function (resolve, reject) {
@@ -45,10 +47,31 @@ var home = {
             resolve({ settings: settings });
         });
     },
+    created: function () {
+        var _this = this;
+        this.$watch('hosts_datas', function (n, o) {
+            _this['hostObject'] = [];
+            var lines = n.split("\n");
+            for (var lineNumber in lines) {
+                var line = lines[lineNumber];
+                var ip = hosts.getIp(line);
+                if (ip) {
+                    ip = ip[0];
+                    //on vire les éléments vide avec : filter(x=>!!x)
+                    var domains = line.replace(ip, '').split(' ').filter(function (x) { return !!x; });
+                    _this['hostObject'].push({
+                        ip: ip,
+                        domains: domains
+                    });
+                }
+            }
+        });
+    },
     methods: {
         load: function (index) {
             var doc = this.history[index];
             this.$children[0].model = doc['data'];
+            this['hosts_datas'] = doc['data'];
             this.cfile = doc;
         },
         reload: function () {
@@ -151,4 +174,7 @@ var home = {
         }
     }
 };
-module.exports = home;
+module.exports = function (App) {
+    var vm = App.extend(home);
+    return vm;
+};

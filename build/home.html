@@ -20,13 +20,25 @@
 
     <div class="pane">
         <div class="tab-group">
-            <div class="tab-item ">
-                <span class="icon icon-cancel icon-close-tab"></span>
+            <div class="tab-item " v-bind:class="{ 'active': raw }" v-on:click="raw = true">
+                <span class="icon icon-cancel icon-close-tab" ></span>
                 Host ({{ cfile.rev }})
+            </div>
+            <div class="tab-item " v-bind:class="{ 'active': !raw }" v-on:click="raw = false">
+                <span class="icon icon-cancel icon-close-tab"></span>
+                Editor Mode ({{ cfile.rev }})
             </div>
         </div>
 
-        <codemirror id="t-file" v-on:keyup="saveMe" :model.sync="hosts_datas"></codemirror>
+        <codemirror v-show="raw" id="t-file" v-on:keyup="saveMe" :model.sync="hosts_datas"></codemirror>
+
+        <div v-show="!raw" class="padded" >
+            <div v-for=" ip in hostObject" >
+                <h5><input type="text" v-model="hostObject[$index].ip"></h5>
+                <span v-for="domain in ip.domains">{{ domain }} <button><i class="fa fa-minus"></i></button> </span>
+
+            </div>
+        </div>
 
     </div>
 </div>
