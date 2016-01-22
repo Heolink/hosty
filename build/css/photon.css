@@ -2353,3 +2353,36 @@ td:last-child {
 .nav-group-item .icon-trash {
     cursor: pointer;
 }
+
+.box-host {
+    margin: 10px;
+}
+
+.box-host .header {
+    border-radius: 5px 5px 0px 0px;
+    background-color: #00a8c6;
+    padding: 10px;
+    color: #fff;
+}
+.box-host .header span {
+    font-size: 13px;
+}
+.box-host .header input {
+    color: #0a001f;
+}
+.box-host .body ul {
+    margin: 0px;
+    padding: 0px;
+}
+.box-host .body ul li {
+    list-style: none;
+    padding: 5px;
+    float: left;
+}
+
+.box-host .body ul:after {
+    content: ' ';
+    clear: both;
+    display: block;
+
+}

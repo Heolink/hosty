@@ -32,11 +32,33 @@
 
         <codemirror v-show="raw" id="t-file" v-on:keyup="saveMe" :model.sync="hosts_datas"></codemirror>
 
-        <div v-show="!raw" class="padded" >
-            <div v-for=" ip in hostObject" >
-                <h5><input type="text" v-model="hostObject[$index].ip"></h5>
-                <span v-for="domain in ip.domains">{{ domain }} <button><i class="fa fa-minus"></i></button> </span>
-
+        <div v-show="!raw" class="padded" v-on:keypress="saveMeEditor" >
+            <div v-for="ip in hostObject" class="box-host" >
+                <div class="header" @dblclick="editeIp(ip)">
+                    <span v-show="ipEdited != ip">{{ ip.ip }} <i @click="addDomain(ip)" class="fa fa-plus-square-o"></i></span>
+                    <input @blur="doneAddDomain(ip)"
+                           @keyup.enter="doneAddDomain(ip)"
+                           @keyup.esc="cancelAddDomain(ip)"
+                           v-to-focus="domainAdd == ip"
+                           v-show="domainAdd == ip" type="text" v-model="newDomain">
+                    <input @blur="doneEditIp(ip)"
+                           @keyup.enter="doneEditIp(ip)"
+                           @keyup.esc="cancelEditIp(ip)"
+                           v-to-focus="ipEdited == ip"
+                           v-show="ipEdited == ip" type="text" v-model="ip.ip">
+                </div>
+                <div class="body">
+                    <ul>
+                        <li v-for="(index, domain) in ip.domains"  @dblclick="editeDomain(domain)">
+                            <span v-show="domainEdited != domain" >{{ domain.domain }} <i @click="removeDomain(ip,domain)" class="fa fa-minus-square-o"></i></span>
+                            <input @blur="doneEditDomain(ip, domain)"
+                                   @keyup.enter="doneEditDomain(ip, domain)"
+                                   @keyup.esc="cancelEditDomain(domain)"
+                                   v-to-focus="domainEdited == domain"
+                                   v-show="domainEdited == domain" type="text" v-model="domain.domain">
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
 

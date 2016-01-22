@@ -2,6 +2,7 @@ import fs = require('fs');
 var notie = require('notie');
 var Datastore = require('nedb');
 var uniqid = require('uniqid');
+var mousetrap = require('mousetrap');
 var remote = require('electron').remote
 const pathConfig = remote.app.getPath('appData') + '/hosty';
 
@@ -26,8 +27,14 @@ var home = {
             },
             master: null,
             settings: {},
-            raw: true,
-            hostObject: []
+            raw: false,
+            ipEdited: null,
+            ipAdd: null,
+            domainAdd: null,
+            domainEdited: null,
+            hostObject: [],
+            lineRemove: [],
+            newDomain: null
         }
     },
     asyncData: function (resolve, reject) {
@@ -56,6 +63,13 @@ var home = {
         })
     },
     created: function () {
+
+        mousetrap.bind(['command+s', 'ctrl+s'], (e) => {
+            if( !this.raw ) {
+                this.saveEditor(e);
+            }
+        })
+
         this.$watch('hosts_datas', (n, o) => {
             this['hostObject'] = []
             var lines = n.split("\n");
@@ -65,9 +79,12 @@ var home = {
                 if(ip) {
                     ip = ip[0];
                     //on vire les éléments vide avec : filter(x=>!!x)
-                    var domains = line.replace(ip,'').split(' ').filter(x=>!!x);
+                    var domains = line.replace(ip,'').split(' ').filter(x=>!!x).map(function(v){
+                        return {'domain': v};
+                    });
                     this['hostObject'].push({
                         ip: ip,
+                        lineNumber:lineNumber,
                         domains: domains
                     });
                 }
@@ -75,6 +92,78 @@ var home = {
         })
     },
     methods: {
+        addDomain: function(ip)
+        {
+            this.domainAdd = ip;
+        },
+        doneAddDomain: function(ip)
+        {
+            if (!this.domainAdd) {
+                return;
+            }
+            this.domainAdd = null;
+            if (this['newDomain']) {
+                ip.domains.push({
+                    domain: this['newDomain']
+                });
+            }
+            this['newDomain'] = null;
+        },
+        cancelAddDomain: function (ip) {
+            this.domainAdd = null;
+            this['newDomain']= null;
+        },
+        editeIp: function(ip)
+        {
+            this.ipEdited = ip;
+            this.ipBefore = ip.ip;
+        },
+        doneEditIp: function(ip)
+        {
+            if (!this.ipEdited) {
+                return;
+            }
+            this.ipEdited = null;
+            if (!ip.ip) {
+                this['lineRemove'].push(ip.lineNumber);
+                this.hostObject.$remove(ip);
+            }
+        },
+        cancelEditIp: function (ip) {
+            this.ipEdited = null;
+            ip.ip = this.ipBefore;
+        },
+        editeDomain: function(domain)
+        {
+            this.domainEdited = domain;
+            this.domainBefore = domain.domain;
+        },
+        doneEditDomain: function(ip, domain)
+        {
+            if (!this.domainEdited) {
+                return;
+            }
+            this.domainEdited = null;
+            if (!domain.domain) {
+                ip.domains.$remove(domain);
+                if( !ip.domains.length ) {
+                    this['lineRemove'].push( ip.lineNumber )
+                    this.hostObject.$remove(ip)
+                }
+            }
+        },
+        removeDomain: function(ip, domain)
+        {
+            ip.domains.$remove(domain);
+            if( !ip.domains.length ) {
+                this['lineRemove'].push( ip.lineNumber )
+                this.hostObject.$remove(ip)
+            }
+        },
+        cancelEditDomain: function (domain) {
+            this.domainEdited = null;
+            domain.domain = this.domainBefore;
+        },
         load: function(index) {
             var doc = this.history[index];
             this.$children[0].model = doc['data'];
@@ -154,6 +243,30 @@ var home = {
                 this.save(event);
             }
             prevKeyPress = current;
+        },
+        saveMeEditor: function(event){
+            var current = event.keyCode;
+            if( current == 83 && (prevKeyPress == 91 || prevKeyPress == 17) ) {
+                this.saveEditor(event);
+            }
+            prevKeyPress = current;
+        },
+        saveEditor: function(event)
+        {
+            var linesHost = this.hosts_datas.split("\n");
+            for( var ip of this.hostObject ) {
+                var arrayDomains = ip.domains.map((v)=>v.domain);
+                if( !arrayDomains.length ) {
+                    linesHost.splice(ip.lineNumber, 1);
+                } else {
+                    linesHost[ip.lineNumber] = ip.ip + "\t\t" + arrayDomains.join(' ');
+                }
+            }
+            for( var line of this['lineRemove']) {
+                linesHost.splice(line, 1);
+            }
+            this.hosts_datas = linesHost.join("\n");
+            this.save();
         }
     },
     components: {
@@ -189,6 +302,17 @@ var home = {
                     });
                 }
             }
+        }
+    },
+    directives: {
+        'to-focus': function (value) {
+            if (!value) {
+                return;
+            }
+            var el = this.el;
+            Vue.nextTick(function () {
+                el.focus();
+            });
         }
     }
 }
