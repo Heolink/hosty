@@ -30,36 +30,72 @@
             </div>
         </div>
 
-        <codemirror v-to-focus="raw" v-show="raw" id="t-file" v-on:keyup="saveMe" :model.sync="hosts_datas"></codemirror>
+        <codemirror v-to-focus="raw" v-show="raw" id="t-file" :model.sync="hosts_datas"></codemirror>
 
-        <div v-show="!raw" class="padded" v-on:keypress="saveMeEditor" >
-            <div v-for="ip in hostObject" class="box-host" >
-                <div class="header" @dblclick="editeIp(ip)">
-                    <span v-show="ipEdited != ip">{{ ip.ip }} <i @click="addDomain(ip)" class="fa fa-plus-square-o"></i></span>
-                    <input @blur="doneAddDomain(ip)"
-                           @keyup.enter="doneAddDomain(ip)"
-                           @keyup.esc="cancelAddDomain(ip)"
-                           v-to-focus="domainAdd == ip"
-                           v-show="domainAdd == ip" type="text" v-model="newDomain">
-                    <input @blur="doneEditIp(ip)"
-                           @keyup.enter="doneEditIp(ip)"
-                           @keyup.esc="cancelEditIp(ip)"
-                           v-to-focus="ipEdited == ip"
-                           v-show="ipEdited == ip" type="text" v-model="ip.ip">
-                </div>
-                <div class="body">
-                    <ul>
-                        <li v-for="(index, domain) in ip.domains"  @dblclick="editeDomain(domain)">
-                            <span v-show="domainEdited != domain" >{{ domain.domain }} <i @click="removeDomain(ip,domain)" class="fa fa-minus-square-o"></i></span>
-                            <input @blur="doneEditDomain(ip, domain)"
-                                   @keyup.enter="doneEditDomain(ip, domain)"
-                                   @keyup.esc="cancelEditDomain(domain)"
-                                   v-to-focus="domainEdited == domain"
-                                   v-show="domainEdited == domain" type="text" v-model="domain.domain">
-                        </li>
-                    </ul>
+        <div v-show="!raw" class="padded" >
+            <div class="uk-form">
+                <fieldset data-uk-margin="" class="uk-margin-small-bottom">
+                    <legend>Recherche</legend>
+                    <input class="uk-margin-small-top"
+                           @keyup.esc="cancelFilter()" v-model="filterIp" placeholder="IP" type="text">
+                    <input class="uk-margin-small-top"
+                           @keyup.esc="cancelFilter()" v-model="filterDomain" placeholder="DOMAIN" type="text">
+                    <button class="uk-button uk-margin-small-top" @click="cancelFilter()">reset</button>
+                </fieldset>
+                <fieldset data-uk-margin="" class="uk-margin-small-bottom">
+                    <legend>Add ip / domains</legend>
+                    <input class="uk-margin-small-top" @keyup.enter="doneAddIp()"
+                           @keyup.esc="cancelAddIp()" v-model="newIp" placeholder="IP" type="text">
+                    <input class="uk-margin-small-top mousetrap" @keyup.enter="doneAddIp()"
+                           @keyup.esc="cancelAddIp()" v-model="newIpDomain" placeholder="DOMAIN" type="text">
+                    <button class="uk-button uk-margin-small-top" @click="doneAddIp()">Add</button>
+                </fieldset>
+
+            </div>
+            <div class="uk-flex uk-flex-wrap uk-flex-wrap-space-around">
+
+                <div v-for="ip in hostObject | filterBy filterDomains " class="box-host uk-width-medium-1-4">
+                    <div class="uk-panel uk-panel-box uk-panel-header uk-form">
+                        <div class="uk-panel-badge uk-badge uk-badge-success" @click="addDomain(ip)"><i class="fa fa-plus-square-o"></i></div>
+                        <h3 class="uk-panel-title"  @dblclick="editeIp(ip)">
+                            <span v-show="ipEdited != ip">{{ ip.ip }} </span>
+                            <input @blur="doneEditIp(ip)"
+                                   @keyup.enter="doneEditIp(ip)"
+                                   @keyup.esc="cancelEditIp(ip)"
+                                   v-to-focus="ipEdited == ip"
+                                   v-show="ipEdited == ip" type="text" v-model="ip.ip">
+                        </h3>
+                        <input class="k-width-1-1"
+                               placeholder="domain"
+                               @blur="doneAddDomain(ip)"
+                               @keyup.enter="doneAddDomain(ip)"
+                               @keyup.esc="cancelAddDomain(ip)"
+                               v-to-focus="domainAdd == ip"
+                               v-show="domainAdd == ip" type="text" v-model="newDomain">
+
+                        <div class="uk-grid">
+                            <div v-for="(index, domain) in ip.domains" class="box-domain uk-width-1-1">
+                                <div class="uk-panel uk-panel-header uk-panel-box uk-form uk-panel-box-secondary"   @dblclick="editeDomain(domain)">
+                                    <div class="uk-panel-badge uk-badge uk-badge-danger" @click="removeDomain(ip,domain)"><i class="fa fa-trash-o"></i></div>
+                                    <div class="zone-text">
+                                        <span v-show="domainEdited != domain" >{{ domain.domain }}</span>
+                                        <input class="k-width-1-1"
+                                               @blur="doneEditDomain(ip, domain)"
+                                               @keyup.enter="doneEditDomain(ip, domain)"
+                                               @keyup.esc="cancelEditDomain(domain)"
+                                               v-to-focus="domainEdited == domain"
+                                               v-show="domainEdited == domain" type="text" v-model="domain.domain">
+                                    </div>
+
+                                </div>
+                            </div>
+                         </div>
+
+                    </div>
+
                 </div>
             </div>
+
         </div>
 
     </div>

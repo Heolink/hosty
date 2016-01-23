@@ -21,6 +21,7 @@ App.filter('moment', function (value, format) {
     return moment(value).format(format);
 })
 
+
 var Config = App.extend(ConfigConponent)
 
 router.map({

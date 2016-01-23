@@ -24,14 +24,18 @@ var home = {
             },
             master: null,
             settings: {},
-            raw: false,
+            raw: true,
             ipEdited: null,
             ipAdd: null,
             domainAdd: null,
             domainEdited: null,
             hostObject: [],
             lineRemove: [],
-            newDomain: null
+            newDomain: null,
+            newIp: null,
+            newIpDomain: null,
+            filterDomain: null,
+            filterIp: null
         };
     },
     asyncData: function (resolve, reject) {
@@ -59,9 +63,7 @@ var home = {
     created: function () {
         var _this = this;
         mousetrap.bind(['command+s', 'ctrl+s'], function (e) {
-            if (!_this.raw) {
-                _this.saveEditor(e);
-            }
+            _this.save(e);
         });
         this.$watch('hosts_datas', function (n, o) {
             _this['hostObject'] = [];
@@ -73,7 +75,7 @@ var home = {
                     ip = ip[0];
                     //on vire les éléments vide avec : filter(x=>!!x)
                     var domains = line.replace(ip, '').split(' ').filter(function (x) { return !!x; }).map(function (v) {
-                        return { 'domain': v };
+                        return { 'domain': v.trim() };
                     });
                     _this['hostObject'].push({
                         ip: ip,
@@ -85,6 +87,80 @@ var home = {
         });
     },
     methods: {
+        filterDomains: function (ip) {
+            var _this = this;
+            if (!this.filterDomain && !this['filterIp']) {
+                return true;
+            }
+            if (this['filterIp']) {
+                var re = new RegExp(this['filterIp'], 'i');
+                if (!ip.ip.match(re)) {
+                    return false;
+                }
+            }
+            if (!this.filterDomain) {
+                return true;
+            }
+            var i = ip.domains.filter(function (v) {
+                var re = new RegExp(_this.filterDomain, 'i');
+                if (v.domain.match(re)) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            });
+            if (i.length) {
+                return true;
+            }
+            return false;
+        },
+        cancelFilter: function () {
+            this['filterDomain'] = null;
+        },
+        doneAddIp: function () {
+            if (!this['newIp'] || !this['newIpDomain'] || !hosts.getIp(this['newIp'])) {
+                this.cancelAddIp();
+                return;
+            }
+            var already = false;
+            var newIp = {
+                ip: this['newIp'],
+                new: true,
+                domains: [
+                    {
+                        domain: this['newIpDomain']
+                    }
+                ]
+            };
+            for (var _i = 0, _a = this.hostObject; _i < _a.length; _i++) {
+                var ip = _a[_i];
+                if (ip.ip == this['newIp']) {
+                    already = true;
+                    for (var _b = 0, _c = ip.domains; _b < _c.length; _b++) {
+                        var domain = _c[_b];
+                        if (domain.domain == this['newIpDomain']) {
+                            this.cancelAddIp();
+                            return;
+                        }
+                    }
+                    ip.domains.push({
+                        domain: this['newIpDomain']
+                    });
+                    break;
+                }
+            }
+            if (!already) {
+                this.hostObject.push(newIp);
+            }
+            this.cancelAddIp();
+            this.saveEditor();
+            notie.alert(1, 'Success!', 0.5);
+        },
+        cancelAddIp: function () {
+            this['newIp'] = null;
+            this['newIpDomain'] = null;
+        },
         addDomain: function (ip) {
             this.domainAdd = ip;
         },
@@ -99,6 +175,7 @@ var home = {
                 });
             }
             this['newDomain'] = null;
+            this.saveEditor();
         },
         cancelAddDomain: function (ip) {
             this.domainAdd = null;
@@ -117,10 +194,16 @@ var home = {
                 this['lineRemove'].push(ip.lineNumber);
                 this.hostObject.$remove(ip);
             }
+            this.saveEditor();
         },
         cancelEditIp: function (ip) {
             this.ipEdited = null;
             ip.ip = this.ipBefore;
+        },
+        removeIp: function (ip) {
+            this['lineRemove'].push(ip.lineNumber);
+            this.hostObject.$remove(ip);
+            this.saveEditor();
         },
         editeDomain: function (domain) {
             this.domainEdited = domain;
@@ -134,10 +217,10 @@ var home = {
             if (!domain.domain) {
                 ip.domains.$remove(domain);
                 if (!ip.domains.length) {
-                    this['lineRemove'].push(ip.lineNumber);
-                    this.hostObject.$remove(ip);
+                    this.removeIp(ip);
                 }
             }
+            this.saveEditor();
         },
         removeDomain: function (ip, domain) {
             ip.domains.$remove(domain);
@@ -145,6 +228,7 @@ var home = {
                 this['lineRemove'].push(ip.lineNumber);
                 this.hostObject.$remove(ip);
             }
+            this.saveEditor();
         },
         cancelEditDomain: function (domain) {
             this.domainEdited = null;
@@ -186,7 +270,6 @@ var home = {
                 if (that.settings.history) {
                     if (that.settings.historyNb < that.history.length) {
                         var diff = that.history.length - that.settings.historyNb;
-                        console.log(diff, that.settings.historyNb, that.history.length);
                         var toRemove = [];
                         for (var i = that.settings.historyNb - 1; i <= (that.history.length - 1); i++) {
                             toRemove.push(that.history[i]._id);
@@ -216,21 +299,7 @@ var home = {
                 console.log('[ERROR]', d);
             });
         },
-        saveMe: function (event) {
-            var current = event.keyCode;
-            if (current == 83 && (prevKeyPress == 91 || prevKeyPress == 17)) {
-                this.save(event);
-            }
-            prevKeyPress = current;
-        },
-        saveMeEditor: function (event) {
-            var current = event.keyCode;
-            if (current == 83 && (prevKeyPress == 91 || prevKeyPress == 17)) {
-                this.saveEditor(event);
-            }
-            prevKeyPress = current;
-        },
-        saveEditor: function (event) {
+        saveEditor: function () {
             var linesHost = this.hosts_datas.split("\n");
             for (var _i = 0, _a = this.hostObject; _i < _a.length; _i++) {
                 var ip = _a[_i];
@@ -239,7 +308,13 @@ var home = {
                     linesHost.splice(ip.lineNumber, 1);
                 }
                 else {
-                    linesHost[ip.lineNumber] = ip.ip + "\t\t" + arrayDomains.join(' ');
+                    if (!ip.new) {
+                        linesHost[ip.lineNumber] = ip.ip + "\t\t" + arrayDomains.join(' ');
+                    }
+                    else {
+                        var s = ip.ip + "\t\t" + arrayDomains.join(' ');
+                        linesHost.push(s);
+                    }
                 }
             }
             for (var _b = 0, _c = this['lineRemove']; _b < _c.length; _b++) {
@@ -247,7 +322,8 @@ var home = {
                 linesHost.splice(line, 1);
             }
             this.hosts_datas = linesHost.join("\n");
-            this.save();
+            this['lineRemove'] = [];
+            //this.save();
         }
     },
     components: {
@@ -266,6 +342,7 @@ var home = {
                         lineWrapping: true,
                         theme: 'monokai'
                     });
+                    cm.getInputField().classList.add('mousetrap');
                     cm.on('change', function () {
                         vm.$set('model', cm.getValue());
                         // Add { silent: true }  as 3rd arg?
@@ -291,7 +368,7 @@ var home = {
             var el = this.el;
             Vue.nextTick(function () {
                 el.focus();
-                if (el.tagName == 'CODEMIRROR') {
+                if (el.tagName == 'CODEMIRROR' && _this['vm'].$children[0].cm) {
                     _this['vm'].$children[0].cm.refresh();
                 }
             });
