@@ -7,7 +7,8 @@ var Setting = (function () {
         this.data = {
             historyNb: 10,
             history: true,
-            defaultView: 'raw'
+            defaultView: 'raw',
+            _name: this.key
         };
         this.key = 'settings';
     }

@@ -1,6 +1,7 @@
 var os = require('os');
 var Mac = require('./mac');
 var Linux = require('./linux');
+var Win32 = require('./win32');
 var Hosts = (function () {
     function Hosts() {
         this.platform = os.platform();
@@ -10,6 +11,9 @@ var Hosts = (function () {
                 break;
             case 'linux':
                 this.os = new Linux.Linux();
+                break;
+            case 'win32':
+                this.os = new Win32.Win32();
                 break;
         }
     }

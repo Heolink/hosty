@@ -10,6 +10,7 @@ class Setting {
         historyNb: 10,
         history: true,
         defaultView: 'raw',
+        _name: this.key
     };
     private key = 'settings'
 

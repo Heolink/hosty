@@ -7,11 +7,13 @@ var pathConfig = remote.app.getPath('appData') + '/hosty';
 var InterfaceHosts = require('./interfaceHosts');
 var Mac = (function () {
     function Mac() {
+        this.file = '/etc/hosts';
         this.clientSave = false;
     }
     Mac.prototype.read = function () {
+        var _this = this;
         return new Promise(function (resolve, reject) {
-            fs.readFile(Mac.file, { encoding: 'UTF8' }, function (err, data) {
+            fs.readFile(_this.file, { encoding: 'UTF8' }, function (err, data) {
                 if (err) {
                     reject(err);
                 }
@@ -20,7 +22,7 @@ var Mac = (function () {
         });
     };
     Mac.prototype.write = function (data) {
-        var command = 'mv "' + pathConfig + '/hosts" ' + Mac.file;
+        var command = 'mv "' + pathConfig + '/hosts" ' + this.file;
         var options = {
             name: 'Hosty'
         };
@@ -44,7 +46,7 @@ var Mac = (function () {
     };
     Mac.prototype.watch = function (callback) {
         var that = this;
-        chokidar.watch(Mac.file, { ignored: /[\/\\]\./ }).on('change', function (event, path) {
+        chokidar.watch(this.file, { ignored: /[\/\\]\./ }).on('change', function (event, path) {
             if (that.clientSave) {
                 that.clientSave = false;
             }
@@ -53,7 +55,6 @@ var Mac = (function () {
             }
         });
     };
-    Mac.file = '/etc/hosts';
     return Mac;
 })();
 exports.Mac = Mac;

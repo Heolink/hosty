@@ -1,5 +1,5 @@
 export declare class Mac implements InterfaceHosts {
-    static file: string;
+    file: string;
     clientSave: boolean;
     read(): any;
     write(data: String): any;

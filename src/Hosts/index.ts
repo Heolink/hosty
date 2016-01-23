@@ -1,7 +1,7 @@
 import os = require('os');
 import Mac = require('./mac');
 import Linux = require('./linux');
-import Windows = require('./windows');
+import Win32 = require('./win32');
 
 class Hosts {
 
@@ -20,7 +20,7 @@ class Hosts {
                 this.os = new Linux.Linux();
                 break;
             case 'win32':
-                this.os = new Windows.Windows();
+                this.os = new Win32.Win32();
                 break;
         }
     }
