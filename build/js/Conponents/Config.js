@@ -10,7 +10,8 @@ var config = {
         return {
             settings: {
                 _name: 'settings',
-                historyNb: 10
+                historyNb: 10,
+                defaultView: 'raw'
             }
         };
     },

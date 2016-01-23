@@ -6,6 +6,7 @@ declare class Setting {
     data: {
         historyNb: number;
         history: boolean;
+        defaultView: string;
     };
     private key;
     constructor();

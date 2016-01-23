@@ -8,7 +8,8 @@ class Setting {
 
     public data = {
         historyNb: 10,
-        history: true
+        history: true,
+        defaultView: 'raw',
     };
     private key = 'settings'
 
@@ -19,7 +20,7 @@ class Setting {
     {
         dbSettings.findOne({_name: this.key}).exec(  (err, doc) => {
             if(doc) {
-                this.data = doc;
+                this.data = Vue.util.extend(this.data, doc);
             }
             callback(this.data);
         });

@@ -65,7 +65,10 @@ var home = {
             resolve({history:docs})
         });
         Settings.read(function(settings){
-            resolve({settings:settings})
+            resolve({
+                settings:settings,
+                raw: (settings.defaultView == 'raw') ? true : false
+            })
         })
     },
     created: function () {
@@ -174,7 +177,7 @@ var home = {
         cancelAddIp: function()
         {
             this['newIp'] = null;
-            this['newIpDomain'] = null;
+            this.newIpDomain = null;
         },
         addDomain: function(ip)
         {
@@ -411,6 +414,5 @@ var home = {
 
 module.exports = function(App) {
     var vm = App.extend(home);
-
     return vm;
 }

@@ -6,7 +6,8 @@ var Setting = (function () {
     function Setting() {
         this.data = {
             historyNb: 10,
-            history: true
+            history: true,
+            defaultView: 'raw'
         };
         this.key = 'settings';
     }
@@ -14,7 +15,7 @@ var Setting = (function () {
         var _this = this;
         dbSettings.findOne({ _name: this.key }).exec(function (err, doc) {
             if (doc) {
-                _this.data = doc;
+                _this.data = Vue.util.extend(_this.data, doc);
             }
             callback(_this.data);
         });

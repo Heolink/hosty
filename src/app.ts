@@ -21,9 +21,6 @@ App.filter('moment', function (value, format) {
     return moment(value).format(format);
 })
 
-
-var Config = App.extend(ConfigConponent)
-
 router.map({
     '/': {
         component: HomeConponent
@@ -34,3 +31,9 @@ router.map({
 })
 
 router.start(App, '#app')
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelector('.save').addEventListener('click', function(){
+        router.app.$children[0].save()
+    });
+})
