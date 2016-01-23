@@ -9,13 +9,13 @@ var InterfaceHosts = require('./interfaceHosts');
 
 export class Mac implements InterfaceHosts {
 
-    static file =  '/etc/hosts'
+    public file =  '/etc/hosts'
 
     public clientSave = false;
 
     public read() {
-        return new Promise(function(resolve, reject){
-            fs.readFile(Mac.file, {encoding:'UTF8'}, (err, data) => {
+        return new Promise((resolve, reject) => {
+            fs.readFile(this.file, {encoding:'UTF8'}, (err, data) => {
                 if (err) {
                     reject(err);
                 }
@@ -25,7 +25,7 @@ export class Mac implements InterfaceHosts {
     }
 
     public write(data: String) {
-        var command = 'mv "'+pathConfig +'/hosts" ' + Mac.file;
+        var command = 'mv "'+pathConfig +'/hosts" ' + this.file;
 
         var options = {
             name: 'Hosty',
@@ -52,7 +52,7 @@ export class Mac implements InterfaceHosts {
     public watch(callback: Function)
     {
         var that = this
-        chokidar.watch(Mac.file, {ignored: /[\/\\]\./}).on('change', (event, path) => {
+        chokidar.watch(this.file, {ignored: /[\/\\]\./}).on('change', (event, path) => {
             if( that.clientSave ) {
                 that.clientSave = false;
             } else {
