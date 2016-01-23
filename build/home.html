@@ -30,7 +30,7 @@
             </div>
         </div>
 
-        <codemirror v-show="raw" id="t-file" v-on:keyup="saveMe" :model.sync="hosts_datas"></codemirror>
+        <codemirror v-to-focus="raw" v-show="raw" id="t-file" v-on:keyup="saveMe" :model.sync="hosts_datas"></codemirror>
 
         <div v-show="!raw" class="padded" v-on:keypress="saveMeEditor" >
             <div v-for="ip in hostObject" class="box-host" >

@@ -3,6 +3,8 @@ var notie = require('notie');
 var Datastore = require('nedb');
 var uniqid = require('uniqid');
 var mousetrap = require('mousetrap');
+var CodeMirror = require('codemirror');
+require('codemirror/mode/ruby/ruby');
 var remote = require('electron').remote;
 var pathConfig = remote.app.getPath('appData') + '/hosty';
 var Hosts = require('../Hosts');
@@ -275,18 +277,23 @@ var home = {
                             cm.setValue(value);
                         }
                     });
+                    this.cm = cm;
                 }
             }
         }
     },
     directives: {
         'to-focus': function (value) {
+            var _this = this;
             if (!value) {
                 return;
             }
             var el = this.el;
             Vue.nextTick(function () {
                 el.focus();
+                if (el.tagName == 'CODEMIRROR') {
+                    _this['vm'].$children[0].cm.refresh();
+                }
             });
         }
     }
