@@ -10,11 +10,12 @@ class Setting {
         historyNb: 10,
         history: true,
         defaultView: 'raw',
-        _name: this.key
+        _name: null
     };
     private key = 'settings'
 
     constructor() {
+        this.data._name = this.key;
     }
 
     public read(callback)
@@ -29,6 +30,8 @@ class Setting {
 
     public write(data, callback)
     {
+        data = Vue.util.extend(data, this.data);
+        console.log(data)
         if( data.historyNb > 0 ) {
             data.history = true;
         } else {

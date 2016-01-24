@@ -4,10 +4,15 @@
   "description": "A simple hosts file manager",
   "author": "Heolink",
   "main": "build/app.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Heolink/hosty.git"
+  },
   "scripts": {
-    "start": "electron .",
+    "start": "DEV=true electron .",
     "package": "electron-packager . hosty --platform=darwin --arch=x64 --version=0.36.4 --out=dist --overwrite --icon=./icons/icon.icns --ignore='^/dist$' --ignore='^/icons$' --ignore='^/typings$' --ignore='^/src$' --prune",
-    "package:linux": "electron-packager . hosty --platform=linux --arch=x64 --version=0.36.4 --out=dist --overwrite --ignore='^/dist$' --ignore='^/icons$' --ignore='^/typings$' --ignore='^/src$' --prune"
+    "package:linux": "electron-packager . hosty --platform=linux --arch=x64 --version=0.36.4 --out=dist --overwrite --ignore='^/dist$' --ignore='^/icons$' --ignore='^/typings$' --ignore='^/src$' --prune",
+    "package:win32": "electron-packager . hosty --platform=win32 --arch=x64 --version=0.36.4 --out=dist --overwrite --ignore='^/dist$' --ignore='^/icons$' --ignore='^/typings$' --ignore='^/src$' --prune"
   },
   "devDependencies": {
     "electron-packager": "^5.2.1",

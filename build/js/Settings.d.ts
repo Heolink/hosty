@@ -7,7 +7,7 @@ declare class Setting {
         historyNb: number;
         history: boolean;
         defaultView: string;
-        _name: string;
+        _name: any;
     };
     private key;
     constructor();
