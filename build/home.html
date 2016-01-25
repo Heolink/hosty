@@ -54,9 +54,9 @@
             </div>
             <div class="uk-flex uk-flex-wrap uk-flex-wrap-space-around">
 
-                <div v-for="ip in hostObject | filterBy filterDomains " class="box-host uk-width-medium-1-4">
-                    <div class="uk-panel uk-panel-box uk-panel-header uk-form">
-                        <div class="uk-panel-badge uk-badge uk-badge-success" @click="addDomain(ip)"><i class="fa fa-plus-square-o"></i></div>
+                <div v-for="ip in hostObject | filterBy filterDomains "  class="box-host uk-width-medium-1-4">
+                    <div v-bind:class="{ 'uk-panel-box-warning': ip.comment }" class="uk-panel uk-panel-box uk-panel-header uk-form">
+                        <div  class="uk-panel-badge uk-badge uk-badge-success" @click="addDomain(ip)"><i class="fa fa-plus-square-o"></i></div>
                         <h3 class="uk-panel-title"  @dblclick="editeIp(ip)">
                             <span v-show="ipEdited != ip">{{ ip.ip }} </span>
                             <input @blur="doneEditIp(ip)"

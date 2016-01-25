@@ -29,3 +29,36 @@
     font-size: 13px;
 }
 
+.uk-panel-box-success {
+    background-color: #f2fae3;
+    color: #8cc14c;
+}
+.uk-panel-box-success-hover:hover {
+    color: #8cc14c;
+}
+.uk-panel-box-success .uk-panel-title {
+    color: #8cc14c;
+}
+
+.uk-panel-box-warning {
+    background-color: #fffceb;
+    color: #faa732;
+}
+.uk-panel-box-warning-hover:hover {
+    color: #faa732;
+}
+.uk-panel-box-warning .uk-panel-title {
+    color: #faa732;
+}
+
+.uk-panel-box-danger {
+    background-color: #fff1f0;
+    color: #da314b;
+}
+.uk-panel-box-danger-hover:hover {
+    color: #da314b;
+}
+.uk-panel-box-danger .uk-panel-title {
+    color: #da314b;
+}
+

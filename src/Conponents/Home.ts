@@ -1,4 +1,5 @@
 import fs = require('fs');
+import {unzipSync} from "zlib";
 var notie = require('notie');
 var Datastore = require('nedb');
 var uniqid = require('uniqid');
@@ -83,13 +84,54 @@ var home = {
             this['hostObject'] = []
             var lines = n.split("\n");
             for(var lineNumber in lines) {
-                var line = lines[lineNumber];
+                var line = lines[lineNumber].trim();
+                if( line.match(/^#/) ) {
+                    var cleanLine = line.replace(/^#+/,'').trim();
+                    var ipComented = hosts.getIp(cleanLine);
+
+                    if( ipComented ) {
+                        ipComented = ipComented[0];
+                        var domains = cleanLine.replace(ipComented,'').split(' ').filter( (x, k)=>{
+                            if( !x ) {
+                                return false;
+                            }
+                            if(x.match(/#/) ) {
+                                return false;
+                            }
+                            return true;
+
+                        }).map(function(v, k){
+                            return {'domain': v.trim(),'comment':true};
+                        });
+                        this['hostObject'].push({
+                            ip: ipComented,
+                            lineNumber:lineNumber,
+                            domains: domains,
+                            comment: true
+                        });
+                    }
+                }
                 var ip = hosts.getIp(line)
                 if(ip) {
                     ip = ip[0];
                     //on vire les éléments vide avec : filter(x=>!!x)
-                    var domains = line.replace(ip,'').split(' ').filter(x=>!!x).map(function(v){
-                        return {'domain': v.trim()};
+                    var inComment :any = false;
+                    var domains = line.replace(ip,'').split(' ').filter( (x, k)=>{
+                        if( !x ) {
+                            return false;
+                        }
+                        if(x.match(/#/) ) {
+                            inComment = k;
+                            return false;
+                        }
+                        return true;
+
+                    }).map(function(v, k){
+                        var c = false;
+                        if( inComment !== false && k >= inComment ) {
+                            c = true;
+                        }
+                        return {'domain': v.trim(),'comment':c};
                     });
                     this['hostObject'].push({
                         ip: ip,
@@ -337,13 +379,16 @@ var home = {
             var linesHost = this.hosts_datas.split("\n");
             for( var ip of this.hostObject ) {
                 var arrayDomains = ip.domains.map((v)=>v.domain);
+
                 if( !arrayDomains.length ) {
                     linesHost.splice(ip.lineNumber, 1);
                 } else {
+                    var comment = (ip.comment) ? '#' : '';
+
                     if( !ip.new ) {
-                        linesHost[ip.lineNumber] = ip.ip + "\t\t" + arrayDomains.join(' ');
+                        linesHost[ip.lineNumber] = comment + ip.ip + "\t\t" + arrayDomains.join(' ');
                     } else {
-                        var s = ip.ip + "\t\t" + arrayDomains.join(' ');
+                        var s = comment + ip.ip + "\t\t" + arrayDomains.join(' ');
                         linesHost.push(s);
                     }
 
