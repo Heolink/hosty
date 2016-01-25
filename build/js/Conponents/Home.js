@@ -4,6 +4,7 @@ var Datastore = require('nedb');
 var uniqid = require('uniqid');
 var mousetrap = require('mousetrap');
 var CodeMirror = require('codemirror');
+var UIkit = require('uikit');
 require('codemirror/mode/ruby/ruby');
 var remote = require('electron').remote;
 var pathConfig = remote.app.getPath('appData') + '/hosty';
@@ -121,7 +122,8 @@ var home = {
                     _this['hostObject'].push({
                         ip: ip,
                         lineNumber: lineNumber,
-                        domains: domains
+                        domains: domains,
+                        comment: false
                     });
                 }
             }
@@ -157,7 +159,11 @@ var home = {
             return false;
         },
         cancelFilter: function () {
-            this['filterDomain'] = null;
+            this.filterDomain = null;
+        },
+        descativateIp: function (ip, k) {
+            ip.comment = !ip.comment;
+            this.saveEditor();
         },
         doneAddIp: function () {
             if (!this['newIp'] || !this['newIpDomain'] || !hosts.getIp(this['newIp'])) {

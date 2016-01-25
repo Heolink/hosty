@@ -8,6 +8,7 @@ var VueAsyncData = require('vue-async-data')
 var remote = require('electron').remote
 const pathConfig = remote.app.getPath('appData') + '/hosty';
 
+
 Vue.use(VueRouter);
 Vue.use(VueAsyncData);
 
