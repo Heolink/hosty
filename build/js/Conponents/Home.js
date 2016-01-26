@@ -109,13 +109,14 @@ var home = {
                         }
                         if (x.match(/#/)) {
                             inComment = k;
-                            return false;
+                            return true;
                         }
                         return true;
                     }).map(function (v, k) {
                         var c = false;
                         if (inComment !== false && k >= inComment) {
                             c = true;
+                            v = v.replace(/#/, '');
                         }
                         return { 'domain': v.trim(), 'comment': c };
                     });
@@ -161,7 +162,7 @@ var home = {
         cancelFilter: function () {
             this.filterDomain = null;
         },
-        descativateIp: function (ip, k) {
+        descativateIp: function (ip) {
             ip.comment = !ip.comment;
             this.saveEditor();
         },
@@ -205,8 +206,12 @@ var home = {
             notie.alert(1, 'Success!', 0.5);
         },
         cancelAddIp: function () {
-            this['newIp'] = null;
+            this.newIp = null;
             this.newIpDomain = null;
+        },
+        descativateDomain: function (domain) {
+            domain.comment = !domain.comment;
+            this.saveEditor();
         },
         addDomain: function (ip) {
             this.domainAdd = ip;
@@ -216,17 +221,18 @@ var home = {
                 return;
             }
             this.domainAdd = null;
-            if (this['newDomain']) {
+            if (this.newDomain) {
                 ip.domains.push({
-                    domain: this['newDomain']
+                    domain: this.newDomain,
+                    comment: false
                 });
             }
-            this['newDomain'] = null;
+            this.newDomain = null;
             this.saveEditor();
         },
         cancelAddDomain: function (ip) {
             this.domainAdd = null;
-            this['newDomain'] = null;
+            this.newDomain = null;
         },
         editeIp: function (ip) {
             this.ipEdited = ip;
@@ -356,21 +362,35 @@ var home = {
                 }
                 else {
                     var comment = (ip.comment) ? '#' : '';
+                    var cd = '';
+                    var commentDomain = ip.domains.filter(function (x) { return x.comment; }).map(function (v) { return v.domain; });
+                    var noCommentDomain = ip.domains.filter(function (x) { return x.comment == false; }).map(function (v) { return v.domain; });
+                    console.log(ip.ip, commentDomain.length, noCommentDomain.length);
+                    //si pas d'ip non commenté on commente toute la ligne
+                    if (!noCommentDomain.length) {
+                        comment = '#';
+                        noCommentDomain = commentDomain;
+                        commentDomain = [];
+                    }
+                    if (commentDomain.length && noCommentDomain.length) {
+                        cd = '#';
+                    }
+                    var line = comment + ip.ip + "\t\t" + noCommentDomain.join(' ') + ' ' + cd + commentDomain.join(' ');
                     if (!ip.new) {
-                        linesHost[ip.lineNumber] = comment + ip.ip + "\t\t" + arrayDomains.join(' ');
+                        linesHost[ip.lineNumber] = line;
                     }
                     else {
-                        var s = comment + ip.ip + "\t\t" + arrayDomains.join(' ');
-                        linesHost.push(s);
+                        linesHost.push(line);
                     }
                 }
             }
-            for (var _b = 0, _c = this['lineRemove']; _b < _c.length; _b++) {
+            for (var _b = 0, _c = this.lineRemove; _b < _c.length; _b++) {
                 var line = _c[_b];
                 linesHost.splice(line, 1);
             }
             this.hosts_datas = linesHost.join("\n");
-            this['lineRemove'] = [];
+            console.log(this.hosts_datas);
+            this.lineRemove = [];
             //this.save();
         }
     },

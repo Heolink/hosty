@@ -79,8 +79,12 @@
 
                         <div class="uk-grid">
                             <div v-for="(index, domain) in ip.domains" class="box-domain uk-width-1-1">
-                                <div class="uk-panel uk-panel-header uk-panel-box uk-form uk-panel-box-secondary"   @dblclick="editeDomain(domain)">
-                                    <div class="uk-panel-badge uk-badge uk-badge-danger" @click="removeDomain(ip,domain)"><i class="fa fa-trash-o"></i></div>
+                                <div v-bind:class="{ 'uk-panel-box-warning': domain.comment }" class="uk-panel uk-panel-header uk-panel-box uk-form uk-panel-box-secondary"   @dblclick="editeDomain(domain)">
+
+                                    <div class="uk-float-right">
+                                        <button v-show="!ip.comment"  class="uk-button uk-button-danger uk-button-mini" v-bind:class="{ 'uk-active': domain.comment }" @click="descativateDomain(domain)"><i class="uk-icon-stop-circle"></i></button>
+                                        <button  class="uk-button uk-button-danger uk-button-mini" @click="removeDomain(ip,domain)"><i class="uk-icon-trash-o"></i></button>
+                                    </div>
                                     <div class="zone-text">
                                         <span v-show="domainEdited != domain" >{{ domain.domain }}</span>
                                         <input class="k-width-1-1"
