@@ -13,6 +13,7 @@ var Settings = require('../Settings');
 var dbHistory = new Datastore({ filename: pathConfig + '/history.db', autoload: true });
 var hosts = new Hosts();
 var prevKeyPress = null;
+var raw = true;
 var home = {
     template: fs.readFileSync(remote.app.getAppPath() + '/build/home.html', 'UTF8'),
     data: function () {
@@ -25,7 +26,7 @@ var home = {
             },
             master: null,
             settings: {},
-            raw: true,
+            raw: raw,
             ipEdited: null,
             ipAdd: null,
             domainAdd: null,
@@ -40,6 +41,7 @@ var home = {
         };
     },
     asyncData: function (resolve, reject) {
+        var _this = this;
         var that = this;
         hosts.read().then(function (d) {
             hosts.watch(function () {
@@ -51,6 +53,9 @@ var home = {
                 'hosts_datas': d,
                 master: d
             });
+            if (_this.raw == false) {
+                _this.buildEditor();
+            }
         }, function error(d) {
             reject(d);
         });
@@ -58,9 +63,10 @@ var home = {
             resolve({ history: docs });
         });
         Settings.read(function (settings) {
+            raw = (settings.defaultView == 'raw') ? true : false;
             resolve({
                 settings: settings,
-                raw: (settings.defaultView == 'raw') ? true : false
+                raw: raw
             });
         });
     },
@@ -69,9 +75,22 @@ var home = {
         mousetrap.bind(['command+s', 'ctrl+s'], function (e) {
             _this.save(e);
         });
-        this.$watch('hosts_datas', function (n, o) {
-            _this['hostObject'] = [];
-            var lines = n.split("\n");
+        this.$watch('raw', function (n, o) {
+            if (n == true) {
+                return;
+            }
+            _this.buildEditor();
+        });
+        /*
+        this.$watch('hosts_datas', (n, o) => {
+
+        });
+        */
+    },
+    methods: {
+        buildEditor: function () {
+            this['hostObject'] = [];
+            var lines = this.hosts_datas.split("\n");
             for (var lineNumber in lines) {
                 var line = lines[lineNumber].trim();
                 if (line.match(/^#/)) {
@@ -90,7 +109,7 @@ var home = {
                         }).map(function (v, k) {
                             return { 'domain': v.trim(), 'comment': true };
                         });
-                        _this['hostObject'].push({
+                        this['hostObject'].push({
                             ip: ipComented,
                             lineNumber: lineNumber,
                             domains: domains,
@@ -120,7 +139,7 @@ var home = {
                         }
                         return { 'domain': v.trim(), 'comment': c };
                     });
-                    _this['hostObject'].push({
+                    this['hostObject'].push({
                         ip: ip,
                         lineNumber: lineNumber,
                         domains: domains,
@@ -128,9 +147,7 @@ var home = {
                     });
                 }
             }
-        });
-    },
-    methods: {
+        },
         filterDomains: function (ip) {
             var _this = this;
             if (!this.filterDomain && !this['filterIp']) {
@@ -385,11 +402,10 @@ var home = {
                 }
             }
             for (var _b = 0, _c = this.lineRemove; _b < _c.length; _b++) {
-                var line = _c[_b];
-                linesHost.splice(line, 1);
+                var l = _c[_b];
+                linesHost.splice(l, 1);
             }
             this.hosts_datas = linesHost.join("\n");
-            console.log(this.hosts_datas);
             this.lineRemove = [];
             //this.save();
         }

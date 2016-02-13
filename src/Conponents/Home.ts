@@ -19,6 +19,8 @@ var dbHistory = new Datastore({ filename: pathConfig + '/history.db', autoload: 
 var hosts = new Hosts();
 var prevKeyPress = null;
 
+var raw = true;
+
 var home = {
     template: fs.readFileSync(remote.app.getAppPath()+'/build/home.html', 'UTF8'),
     data: function() {
@@ -31,7 +33,7 @@ var home = {
             },
             master: null,
             settings: {},
-            raw: true,
+            raw: raw,
             ipEdited: null,
             ipAdd: null,
             domainAdd: null,
@@ -56,8 +58,11 @@ var home = {
                 });
                 resolve({
                     'hosts_datas': d,
-                    master: d
+                     master: d
                 })
+                if( this.raw == false ) {
+                    this.buildEditor();
+                }
             },
             function error(d){
                 reject(d)
@@ -67,23 +72,39 @@ var home = {
             resolve({history:docs})
         });
         Settings.read(function(settings){
+            raw = (settings.defaultView == 'raw') ? true : false;
             resolve({
                 settings:settings,
-                raw: (settings.defaultView == 'raw') ? true : false
+                raw: raw
             })
         })
     },
     created: function () {
 
         mousetrap.bind(['command+s', 'ctrl+s'], (e) => {
-
             this.save(e);
-
         })
 
+
+
+        this.$watch('raw', (n,o) => {
+            if( n == true ) {
+                return;
+            }
+            this.buildEditor();
+        })
+        /*
         this.$watch('hosts_datas', (n, o) => {
+
+        });
+        */
+
+    },
+    methods: {
+        buildEditor: function()
+        {
             this['hostObject'] = []
-            var lines = n.split("\n");
+            var lines = this.hosts_datas.split("\n");
             for(var lineNumber in lines) {
                 var line = lines[lineNumber].trim();
                 if( line.match(/^#/) ) {
@@ -143,10 +164,7 @@ var home = {
                     });
                 }
             }
-        });
-
-    },
-    methods: {
+        },
         filterDomains: function( ip )
         {
             if( !this.filterDomain && !this['filterIp'] ) {
@@ -424,11 +442,11 @@ var home = {
 
                 }
             }
-            for( var line of this.lineRemove) {
-                linesHost.splice(line, 1);
+            for( var l of this.lineRemove) {
+                linesHost.splice(l, 1);
             }
             this.hosts_datas = linesHost.join("\n");
-            console.log(this.hosts_datas)
+
             this.lineRemove = [];
             //this.save();
         }

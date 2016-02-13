@@ -16,6 +16,7 @@
                   </span>
 
         </nav>
+
     </div>
 
     <div class="pane">
@@ -43,7 +44,7 @@
                     <button class="uk-button uk-margin-small-top" @click="cancelFilter()">reset</button>
                 </fieldset>
                 <fieldset data-uk-margin="" class="uk-margin-small-bottom">
-                    <legend>Add ip / domains</legend>
+                    <legend>Ajout d'un host</legend>
                     <input class="uk-margin-small-top" @keyup.enter="doneAddIp()"
                            @keyup.esc="cancelAddIp()" v-model="newIp" placeholder="IP" type="text">
                     <input class="uk-margin-small-top mousetrap" @keyup.enter="doneAddIp()"
