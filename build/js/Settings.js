@@ -24,7 +24,6 @@ var Setting = (function () {
     };
     Setting.prototype.write = function (data, callback) {
         data = Vue.util.extend(data, this.data);
-        console.log(data);
         if (data.historyNb > 0) {
             data.history = true;
         }

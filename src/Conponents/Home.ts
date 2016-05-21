@@ -6,6 +6,7 @@ var uniqid = require('uniqid');
 var mousetrap = require('mousetrap');
 var CodeMirror = require('codemirror');
 var UIkit = require('uikit');
+var Parser = require('../Hosts/parser');
 require('codemirror/mode/ruby/ruby');
 var remote = require('electron').remote
 const pathConfig = remote.app.getPath('appData') + '/hosty';
@@ -103,67 +104,9 @@ var home = {
     methods: {
         buildEditor: function()
         {
-            this['hostObject'] = []
-            var lines = this.hosts_datas.split("\n");
-            for(var lineNumber in lines) {
-                var line = lines[lineNumber].trim();
-                if( line.match(/^#/) ) {
-                    var cleanLine = line.replace(/^#+/,'').trim();
-                    var ipComented = hosts.getIp(cleanLine);
-
-                    if( ipComented ) {
-                        ipComented = ipComented[0];
-                        var domains = cleanLine.replace(ipComented,'').split(' ').filter( (x, k)=>{
-                            if( !x ) {
-                                return false;
-                            }
-                            if(x.match(/#/) ) {
-                                return false;
-                            }
-                            return true;
-
-                        }).map(function(v, k){
-                            return {'domain': v.trim(),'comment':true};
-                        });
-                        this['hostObject'].push({
-                            ip: ipComented,
-                            lineNumber:lineNumber,
-                            domains: domains,
-                            comment: true
-                        });
-                    }
-                }
-                var ip = hosts.getIp(line)
-                if(ip) {
-                    ip = ip[0];
-                    //on vire les éléments vide avec : filter(x=>!!x)
-                    var inComment :any = false;
-                    var domains = line.replace(ip,'').split(' ').filter( (x, k)=>{
-                        if( !x ) {
-                            return false;
-                        }
-                        if(x.match(/#/) ) {
-                            inComment = k;
-                            return true;
-                        }
-                        return true;
-
-                    }).map(function(v, k){
-                        var c = false;
-                        if( inComment !== false && k >= inComment ) {
-                            c = true;
-                            v = v.replace(/#/,'')
-                        }
-                        return {'domain': v.trim(),'comment':c};
-                    });
-                    this['hostObject'].push({
-                        ip: ip,
-                        lineNumber:lineNumber,
-                        domains: domains,
-                        comment: false
-                    });
-                }
-            }
+            var parser = new Parser(this.hosts_datas);
+            this['hostObject'] = parser.parse();
+            console.log(this.hostObject)
         },
         filterDomains: function( ip )
         {
