@@ -1,0 +1,20 @@
+{
+  "name": "hosty",
+  "version": "0.0.0",
+  "description": "An electron-vue project",
+  "main": "./dist/main.js",
+  "dependencies": {
+    "jquery": "^3.1.1",
+    "mousetrap": "^1.6.0",
+    "semantic-ui": "^2.2.7",
+    "sudo-prompt": "^6.2.1",
+    "vue": "^2.1.10",
+    "vue-codemirror-lite": "^1.0.0",
+    "vue-electron": "^1.0.6",
+    "vue-resource": "^1.0.3",
+    "vue-router": "^2.1.2",
+    "vuex": "^2.1.1"
+  },
+  "devDependencies": {},
+  "author": "Heolink <heolink@gmail.com>"
+}

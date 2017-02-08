@@ -1,0 +1,12 @@
+export const GLOBAL_LOADER_SHOW = 'GLOBAL_LOADER_SHOW'
+export const GLOBAL_LOADER_HIDE = 'GLOBAL_LOADER_HIDE'
+
+export const SET_PLATFORM = 'SET_PLATFORM'
+
+export const SET_HOST = 'SET_HOST'
+export const SET_TMP_FILE = 'SET_TMP_FILE'
+export const SET_BACKUP_FILE = 'SET_BACKUP_FILE'
+export const SET_BACKUP = 'SET_BACKUP'
+export const SET_MODIFIED = 'SET_MODIFIED'
+export const SET_FLASH = 'SET_FLASH'
+export const REMOVE_FLASH = 'REMOVE_FLASH'
